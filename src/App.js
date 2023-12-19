@@ -1,9 +1,9 @@
 import './App.css';
 
-import {useState, useEffect} from 'react';
-import {BsTrash, BsBookmarkCheck, BsBookmarkCheckFill} from 'react-icons/bs';
+import { useState, useEffect } from 'react';
+import { BsTrash, BsBookmarkCheck, BsBookmarkCheckFill } from 'react-icons/bs';
 
-const API = 'https://localhost:5000';
+const API = 'http://localhost:5000';
 
 function App() {
   const [title, setTitle] = useState("");
@@ -11,7 +11,30 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Load todos on page load
+
+  useEffect(() => {
+
+    const loadData = async() => {
+
+      setLoading(true)
+
+      const res = await fetch(API + "/todos")
+        .then((res) => res.json())
+        .then((data) => data)
+        .catch((err) => console.log(err));
+
+      setLoading(false)
+
+      setTodos(res);
+
+    };
+
+    loadData();
+  }, []);
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const todo = {
@@ -21,12 +44,17 @@ function App() {
       done: false,
     };
 
-    // Envio para a API
-    console.log(todo);
+    await fetch(API + "/todos", {
+      method: "POST",
+      body: JSON.stringify(todo),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     setTitle("");
     setTime("");
-  }
+  };
 
   return (
     <div className="App">
@@ -39,25 +67,25 @@ function App() {
         <form onSubmit={handleSubmit}>
           <div className='form-control'>
             <label htmlFor='title'>O que você irá fazer?</label>
-            <input 
+            <input
               type="text"
               name='title'
               id='title'
               placeholder='Título da tarefa'
               onChange={(e) => setTitle(e.target.value)}
-              value={title || ""}   
+              value={title || ""}
               required
             />
           </div>
           <div className='form-control'>
             <label htmlFor='time'>Duração:</label>
-            <input 
+            <input
               type="text"
               name='time'
               id='time'
               placeholder='Tempo estimado (em horas)'
               onChange={(e) => setTime(e.target.value)}
-              value={time || ""}   
+              value={time || ""}
               required
             />
           </div>
