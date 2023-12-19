@@ -1,23 +1,73 @@
-import logo from './logo.svg';
 import './App.css';
 
+import {useState, useEffect} from 'react';
+import {BsTrash, BsBookmarkCheck, BsBookmarkCheckFill} from 'react-icons/bs';
+
+const API = 'https://localhost:5000';
+
 function App() {
+  const [title, setTitle] = useState("");
+  const [time, setTime] = useState("");
+  const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const todo = {
+      id: Math.random(),
+      title,
+      time,
+      done: false,
+    };
+
+    // Envio para a API
+    console.log(todo);
+
+    setTitle("");
+    setTime("");
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='todo-header'>
+        <h1>To-Do:</h1>
+        <p>Organizando seus afazeres</p>
+      </div>
+      <div className='form-todo'>
+        <h2>Insira a sua tarefa:</h2>
+        <form onSubmit={handleSubmit}>
+          <div className='form-control'>
+            <label htmlFor='title'>O que você irá fazer?</label>
+            <input 
+              type="text"
+              name='title'
+              id='title'
+              placeholder='Título da tarefa'
+              onChange={(e) => setTitle(e.target.value)}
+              value={title || ""}   
+              required
+            />
+          </div>
+          <div className='form-control'>
+            <label htmlFor='time'>Duração:</label>
+            <input 
+              type="text"
+              name='time'
+              id='time'
+              placeholder='Tempo estimado (em horas)'
+              onChange={(e) => setTime(e.target.value)}
+              value={time || ""}   
+              required
+            />
+          </div>
+          <input type="submit" value='Criar Tarefa' />
+        </form>
+      </div>
+      <div className='list-todo'>
+        <h2>Lista de tarefas:</h2>
+        {todos.length === 0 && <p>Não há tarefas</p>}
+      </div>
     </div>
   );
 }
